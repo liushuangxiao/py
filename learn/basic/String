@@ -1,0 +1,5 @@
+hello = "hello world"
+print(hello)
+
+print(hello[1])
+print(hello[1:5])
