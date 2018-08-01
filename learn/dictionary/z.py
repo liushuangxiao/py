@@ -1,27 +1,23 @@
 import gzip
 import re
 from http import cookiejar
-from urllib import request
+from urllib import request, parse
 
 from bs4 import BeautifulSoup
 
-countRe = re.compile('共 (\d+) 字')
 path = "e:\\dict\\%s"
+pur = path % 'bushou1.json'
+countRe = re.compile('共 (\d+) 字')
 
-# src = path % 'cy-w.json'
-# pur = path % 'cy.txt'
+url = "http://www.zdic.net/z/jbs/bs/?bs=%s"
+host = "http://www.zdic.net/z/jbs/"
+src = path % 'z-w.txt'
 
-# src = path % 'z-w.json'
-# pur = path % 'z.txt'
-#
-src = path % 'c-w.json'
-pur = path % 'c.txt'
-
-f = open(pur, 'w', encoding='UTF-8')
+f = open(src, 'w', encoding='UTF-8')
 
 
 def read():
-    bsf = open(src, 'r', encoding='UTF-8').readline()
+    bsf = open(pur, 'r', encoding='UTF-8').readline()
     bushou1 = eval(bsf)
     return bushou1
 
@@ -52,10 +48,12 @@ def c(opener, url, f, word):
                 has_next = next_pn > page
 
             else:
+                if te == '':
+                    te = '010'
                 f.write("%s %s %s \n" % (te, href, word))
-
         page = next_pn
         url = url + "|" + str(page)
+    f.flush()
 
 
 if __name__ == '__main__':
@@ -77,17 +75,20 @@ if __name__ == '__main__':
     cookie = cookiejar.CookieJar()
     cookie_support = request.HTTPCookieProcessor(cookie)
     opener = request.build_opener(cookie_support)
+
     req2 = request.Request(url="http://www.zdic.net/c/cybs/", headers=head, method='GET')
     res2 = opener.open(req2)
+
+    # f.writelines("--- %s" % url)
+    # f.write("\n")
+
     bushou1 = read()
-    total = 0
     for value in bushou1.values():
-        if type(value) != dict:
+        if type(value) != list:
             continue
-        item = value['word']
-        for bso in item:
-            url = bso["href"]
-            bs_url = url.replace('ci/', 'ci/sc/')
-            c(opener, bs_url, f, bso['word'])
+        for bso in value:
+            bs = parse.quote(bso)
+            bs_url = url % bs
+            c(opener, bs_url, f, bso)
     f.flush()
     f.close()
