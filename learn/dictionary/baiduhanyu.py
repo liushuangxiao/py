@@ -10,10 +10,10 @@ from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 
-# path = "e:\\dict\\%s"
-path = "/data/dict/%s"
-src = path % 'z-h.txt'
-tar = path % 'z-m.txt'
+path = "e:\\dict\\%s"
+# path = "/data/dict/%s"
+src = path % 'c.txt'
+tar = path % 'c-m.txt'
 
 
 def c(opener, item_l):
@@ -30,34 +30,30 @@ def c(opener, item_l):
     response_body = response_body.decode('utf-8')
     html = BeautifulSoup(response_body, 'html.parser')
 
-    head_info = html.find("div", id="word-header")
+    head_info = html.find("div", id="term-header")
     basic = html.find("div", id="basicmean-wrapper")
     detail = html.find("div", id="detailmean-wrapper")
     table = html.find("div", id="table-info-wrapper")
     if head_info:
-        lis = head_info.select("li")
-        li = lis[0]
-        item_data[li.attrs['id']] = li.select("b")[0].text
-        al = li.select("a")
+        bs = head_info.select("b")
+        item_data['pinyin'] = bs[0].text
+        al = head_info.select("a")
         if len(al) > 1:
-            item_data["py_mp3"] = li.select("a")[0].attrs['url']
-
-        for i in range(1, len(lis)):
-            li = lis[i]
-            item_data[li.attrs['id']] = li.select("span")[0].text
+            item_data["py_mp3"] = head_info.select("a")[0].attrs['url']
 
     if basic:
         lis = basic.select("li")
         means = []
         for li in lis:
-            means.append(li.text)
+            for p in li.select("p"):
+                means.append(p.text)
         item_data["basic"] = means
 
     if detail:
         dls = detail.select("dl")
         detail_info = {}
         for dl in dls:
-            dts = dl.select("dt")
+            dts = dl.select("ol")
             if len(dts) == 1:
                 detail_info[dts[0].text] = get_detail(dl)
             else:
@@ -101,13 +97,13 @@ def refresh():
 if __name__ == '__main__':
     ln = 0
     if len(sys.argv) == 1 or sys.argv[1] == '':
-        ln = 6573
+        ln = 1
     elif not str.isalnum(sys.argv[1]):
         sys.exit(9)
     else:
         ln = int(sys.argv[1])
 
-    url = 'http://dict.baidu.com/s?wd=%s'
+    url = 'http://hanyu.baidu.com/s?wd=%s'
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                  'Chrome/64.0.3282.119 Safari/537.36 '
 
@@ -153,5 +149,5 @@ if __name__ == '__main__':
         if count == 50:
             count = 0
             refresh()
-        # sys.exit(0)
+        sys.exit(0)
     f.close()

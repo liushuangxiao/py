@@ -10,8 +10,7 @@ from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 
-# path = "e:\\dict\\%s"
-path = "/data/dict/%s"
+path = "e:\\dict\\%s"
 src = path % 'z-h.txt'
 tar = path % 'z-m.txt'
 
@@ -92,12 +91,6 @@ def get_detail(detail):
     return detail_means
 
 
-def refresh():
-    cookie.clear()
-    req_re = request.Request(url="http://dict.baidu.com/", headers=head, method='GET')
-    opener.open(req_re)
-
-
 if __name__ == '__main__':
     ln = 0
     if len(sys.argv) == 1 or sys.argv[1] == '':
@@ -107,7 +100,7 @@ if __name__ == '__main__':
     else:
         ln = int(sys.argv[1])
 
-    url = 'http://dict.baidu.com/s?wd=%s'
+    url = 'http://www.zdic.net'
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                  'Chrome/64.0.3282.119 Safari/537.36 '
 
@@ -140,18 +133,17 @@ if __name__ == '__main__':
         except HTTPError as e:
             print(' fail')
             time.sleep(20)
-            count = 0
-            refresh()
+            cookie.clear()
             continue
         ln += 1
         f.write(str(data))
         f.write("\n")
         f.flush()
         item = linecache.getline(src, ln)
-        time.sleep(0.1)
+        time.sleep(0.8)
         count += 1
         if count == 50:
             count = 0
-            refresh()
+            cookie.clear()
         # sys.exit(0)
     f.close()

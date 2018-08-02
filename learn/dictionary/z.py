@@ -50,7 +50,7 @@ def c(opener, url, f, word):
             else:
                 if te == '':
                     te = '010'
-                f.write("%s %s %s \n" % (te, href, word))
+                f.write("%s %s %s\n" % (te, href, word))
         page = next_pn
         url = url + "|" + str(page)
     f.flush()

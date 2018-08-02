@@ -32,6 +32,9 @@ if __name__ == '__main__':
     url = "http://www.qishu.cc/chuanyeu/list7_%s.html"
     url = "http://www.qishu.cc/wangyou/list8_%s.html"
     url = "http://www.qishu.cc/lishi/list9_%s.html"
+    url = "http://www.qishu.cc/xiaoyuan/list5_%s.html"
+    url = "http://www.qishu.cc/yanqing/list10_%s.html"
+    url = "http://www.qishu.cc/wenxue/list11_%s.html"
 
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                  'Chrome/64.0.3282.119 Safari/537.36 '
@@ -41,7 +44,7 @@ if __name__ == '__main__':
     cookie = cookiejar.CookieJar()
     cookie_support = request.HTTPCookieProcessor(cookie)
     opener = request.build_opener(cookie_support)
-    for i in range(1, 123):
+    for i in range(1, 13):
         page = url % i
         f.writelines("--- %s" % page)
         print(page)
@@ -49,7 +52,7 @@ if __name__ == '__main__':
         req1 = request.Request(url=page, data=postData, headers=head, method='GET')
         response1 = opener.open(req1)
         html = response1.read()
-        print(html)
+        # print(html)
         html = html.decode('GB18030')
         get_names(html)
         f.flush()

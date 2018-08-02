@@ -1,15 +1,16 @@
 import linecache
 import os
 import sys
+from http import cookiejar
 from urllib import parse
 from urllib import request
 
-# nohup python3 -u dt.py 3183 > g.log 2>&1 &
+# nohup python3 -u dt.py 1 xuanhuan > g.log 2>&1 &
 
-# t_dir = '/data/txt/%s.txt'
-t_dir = 'E:\\ts\%s.txt'
+t_dir = '/data/txt/%s.txt'
+# t_dir = 'E:\\ts\%s.txt'
+d_url = 'http://down.xqishu.com/txt/%s.txt'
 d_url = 'http://xiazai.xqishu.com/txt/%s.txt'
-d_url2 = 'http://down.xqishu.com/txt/%s.txt'
 names_file = 'name.txt'
 
 
@@ -23,12 +24,7 @@ def downloading(filename):
         request.urlretrieve(url, file_path)
         print(' success')
     except Exception as e:
-        url = d_url2 % parse.quote(filename)
-        try:
-            request.urlretrieve(url, file_path)
-            print(' success')
-        except Exception as e:
-            print(' fail')
+        print(' fail')
 
 
 if __name__ == '__main__':
@@ -52,6 +48,32 @@ if __name__ == '__main__':
         sys.exit(8)
 
     name = linecache.getline(names_file, ln)
+
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
+                 'Chrome/64.0.3282.119 Safari/537.36 '
+    head = [
+        ('User-Agnet', user_agent),
+        ('Accept', 'text/javascript, text/html, application/xml, text/xml, */*'),
+        ('Accept-Encoding', 'gzip, deflate'),
+        ('Accept-Language', 'zh-CN,zh;q=0.9'),
+        ('Cache-Control', 'no-cache'),
+        ('Host', 'xiazai.xqishu.com'),
+        ('Pragma', 'no-cache'),
+        ('Referer', 'http://www.xqishu.com/txt/57662.html'),
+        ('X-Prototype-Version', '1.5.0'),
+        ('X-Requested-With', 'XMLHttpRequest'),
+        ('Connection', 'keep-alive')
+    ]
+    cookie = cookiejar.CookieJar()
+    cookie_support = request.HTTPCookieProcessor(cookie)
+    opener = request.build_opener(cookie_support)
+    opener.addheaders = head
+
+    request.install_opener(opener)
+
+    req2 = request.Request(url="http://www.zdic.net/c/cybs/", method='GET')
+    res2 = opener.open(req2)
+
     while name:
         name = name.strip()
         if name.startswith('---'):
