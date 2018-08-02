@@ -10,15 +10,15 @@ from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 
-path = "e:\\dict\\%s"
+path = "F:\\data\\dict\\%s"
 # path = "/data/dict/%s"
 src = path % 'c.txt'
 tar = path % 'c-m.txt'
 
 
-def c(opener, item_l):
-    item_data = {'word': item_l[0]}
-    w_url = url % parse.quote(item_l[0])
+def c():
+    item_data = {'word': item_list[0]}
+    w_url = url % parse.quote(item_list[0])
     global referer
     head['referer'] = referer
     print('dwomload %s %s' % (ln, w_url), end='')
@@ -29,11 +29,11 @@ def c(opener, item_l):
     response_body = gzip.decompress(response_body)
     response_body = response_body.decode('utf-8')
     html = BeautifulSoup(response_body, 'html.parser')
-
     head_info = html.find("div", id="term-header")
     basic = html.find("div", id="basicmean-wrapper")
     detail = html.find("div", id="detailmean-wrapper")
-    table = html.find("div", id="table-info-wrapper")
+    syn_ant = html.find("div", id="syn_ant_wrapper")
+    baike = html.find("div", id="baike-wrapper")
     if head_info:
         bs = head_info.select("b")
         item_data['pinyin'] = bs[0].text
@@ -42,50 +42,55 @@ def c(opener, item_l):
             item_data["py_mp3"] = head_info.select("a")[0].attrs['url']
 
     if basic:
-        lis = basic.select("li")
-        means = []
-        for li in lis:
-            for p in li.select("p"):
-                means.append(p.text)
+        means = {}
+        for ol in basic.select("ol"):
+            for li in ol.select("li"):
+                ps = li.select('p')
+                if len(ps) == 1:
+                    means[ps[0].text] = '无例子'
+                else:
+                    means[ps[0].text] = ps[1].text
         item_data["basic"] = means
 
     if detail:
-        dls = detail.select("dl")
-        detail_info = {}
-        for dl in dls:
-            dts = dl.select("ol")
-            if len(dts) == 1:
-                detail_info[dts[0].text] = get_detail(dl)
-            else:
-                detail_info = get_detail(dl)
-        item_data['detail'] = detail_info
+        ols = detail.select("ol")
+        detail_means = {}
+        for ol in ols:
+            for li in ol.select("li"):
+                ps = li.select('p')
+                if len(ps) == 1:
+                    detail_means[ps[0].text] = '无例子'
+                else:
+                    detail_means[ps[0].text] = ps[1].text
+        item_data['detail'] = detail_means
 
-    if table:
-        cels = table.select(".cell")
-        info = {}
-        for cel in cels:
-            info[cel.attrs['id']] = cel.select("span")[0].text
-        item_data["table"] = info
+    if syn_ant:
+        synonym_elements = syn_ant.find("div", id="synonym")
+        synonym_array = []
+        if synonym_elements:
+            for a in synonym_elements.select('a'):
+                synonym_array.append(a.text)
+        item_data['synonym'] = synonym_array
+
+        antonym_elements = syn_ant.find("div", id="antonym")
+        antonym_array = []
+        if antonym_elements:
+            for a in antonym_elements.select('a'):
+                antonym_array.append(a.text)
+        item_data['antonym'] = antonym_array
+
+    if baike:
+        baike_means = []
+        for content in baike.select(".tab-content"):
+            ps = content.select("p")
+            al = content.select("a")
+            for index in range(0, len(ps)):
+                baike_item = {'baike': ps[index].text.replace('查看百科', "").strip(), 'href': al[index].attrs['href']}
+                baike_means.append(baike_item)
+        item_data['baike'] = baike_means
 
     print(' success')
     return item_data
-
-
-def get_detail(detail):
-    details = detail.select("ol")
-    titles = detail.select("strong")
-    detail_means = {}
-    for i in range(0, len(titles)):
-        lis = details[i].select("li")
-        class_meams = {}
-        for li in lis:
-            ps = li.select('p')
-            ex = []
-            for p in ps:
-                ex.append(p.text)
-            class_meams[ps[0].text] = ex
-        detail_means[titles[i].text.replace('〈', '').replace('〉', '')] = class_meams
-    return detail_means
 
 
 def refresh():
@@ -97,7 +102,7 @@ def refresh():
 if __name__ == '__main__':
     ln = 0
     if len(sys.argv) == 1 or sys.argv[1] == '':
-        ln = 1
+        ln = 31548
     elif not str.isalnum(sys.argv[1]):
         sys.exit(9)
     else:
@@ -122,17 +127,17 @@ if __name__ == '__main__':
     cookie_support = request.HTTPCookieProcessor(cookie)
     opener = request.build_opener(cookie_support)
 
-    req2 = request.Request(url="http://dict.baidu.com/", headers=head, method='GET')
+    req2 = request.Request(url="http://hanyu.baidu.com/", headers=head, method='GET')
     res2 = opener.open(req2)
 
     item = linecache.getline(src, ln)
     f = open(tar, "a+", encoding='utf-8')
-    referer = "http://dict.baidu.com/"
+    referer = "http://hanyu.baidu.com/"
     count = 0
     while item:
         item_list = item.strip().split(' ')
         try:
-            data = c(opener, item_list)
+            data = c()
         except HTTPError as e:
             print(' fail')
             time.sleep(20)
@@ -149,5 +154,4 @@ if __name__ == '__main__':
         if count == 50:
             count = 0
             refresh()
-        sys.exit(0)
     f.close()

@@ -3,7 +3,7 @@ import os
 
 import jieba
 
-dir = 'E:\\ts\\'
+dir = 'F:\\data\\book\\'
 
 
 def read_file(filepath):
