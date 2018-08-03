@@ -10,8 +10,8 @@ from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 
-# path = "e:\\dict\\%s"
-path = "/data/dict/%s"
+path = "e:\\dict\\%s"
+# path = "/data/dict/%s"
 src = path % 'z-h.txt'
 tar = path % 'z-m.txt'
 
@@ -84,10 +84,11 @@ def get_detail(detail):
         class_meams = {}
         for li in lis:
             ps = li.select('p')
-            ex = []
-            for p in ps:
-                ex.append(p.text)
-            class_meams[ps[0].text] = ex
+            if len(ps) > 0:
+                ex = []
+                for p in ps:
+                    ex.append(p.text)
+                class_meams[ps[0].text] = ex
         detail_means[titles[i].text.replace('〈', '').replace('〉', '')] = class_meams
     return detail_means
 
@@ -101,7 +102,7 @@ def refresh():
 if __name__ == '__main__':
     ln = 0
     if len(sys.argv) == 1 or sys.argv[1] == '':
-        ln = 6573
+        ln = 15320
     elif not str.isalnum(sys.argv[1]):
         sys.exit(9)
     else:
@@ -148,7 +149,7 @@ if __name__ == '__main__':
         f.write("\n")
         f.flush()
         item = linecache.getline(src, ln)
-        time.sleep(0.1)
+        time.sleep(0.3)
         count += 1
         if count == 50:
             count = 0

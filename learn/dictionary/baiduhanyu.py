@@ -10,10 +10,12 @@ from urllib.error import HTTPError
 
 from bs4 import BeautifulSoup
 
-path = "F:\\data\\dict\\%s"
-# path = "/data/dict/%s"
+# path = "F:\\data\\dict\\%s"
+path = "/data/dict/%s"
+path = 'e:\\dict\\%s'
 src = path % 'c.txt'
 tar = path % 'c-m.txt'
+fail_file = path % 'c-m.fail.txt'
 
 
 def c():
@@ -99,10 +101,17 @@ def refresh():
     opener.open(req_re)
 
 
+def fail():
+    fail_w = open(fail_file, 'a+', encoding='utf-8')
+    fail_w.write(str(item_list))
+    fail_w.flush()
+    fail_w.close()
+
+
 if __name__ == '__main__':
     ln = 0
     if len(sys.argv) == 1 or sys.argv[1] == '':
-        ln = 31548
+        ln = 32865
     elif not str.isalnum(sys.argv[1]):
         sys.exit(9)
     else:
@@ -138,16 +147,19 @@ if __name__ == '__main__':
         item_list = item.strip().split(' ')
         try:
             data = c()
+            f.write(str(data))
+            f.write("\n")
+            f.flush()
         except HTTPError as e:
             print(' fail')
             time.sleep(20)
             count = 0
             refresh()
             continue
+        except IndexError as e:
+            fail()
+            print(' fail')
         ln += 1
-        f.write(str(data))
-        f.write("\n")
-        f.flush()
         item = linecache.getline(src, ln)
         time.sleep(0.1)
         count += 1
