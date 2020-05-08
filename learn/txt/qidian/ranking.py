@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 path = '/data/txt/%s/'
 path = 'E:\\ts\\qidian\\%s\\'
-path = 'F:\\data\\book\\qidian\\%s\\'
+# path = 'F:\\data\\book\\qidian\\%s\\'
 
 url_finish = ["https://www.qidian.com/rank/fin?style=1&dateType=2&chn=21&page=%s",
               "https://www.qidian.com/rank/fin?style=1&dateType=2&chn=1&page=%s",
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     opener = get_opener()
     # request.install_opener(opener)
 
-    for di in range(0, len(datas)):
+    for di in range(1, len(datas)):
         data = datas[di]
         urls = data['urls']
         _file_names = data['filenames']
@@ -124,7 +124,7 @@ if __name__ == '__main__':
         if not os.path.exists(dp):
             os.makedirs(dp)
 
-        for i in range(0, len(urls)):
+        for i in range(8, len(urls)):
             filename = dp + _file_names[i]
             url = urls[i]
 
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                     refresh()
                     continue
                 index += 1
-                time.sleep(0.2)
+                time.sleep(0.3)
 
             index = 1
             file.flush()
