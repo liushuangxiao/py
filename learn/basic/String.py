@@ -9,5 +9,4 @@ print(hello[0:i])
 print(hello[i:])
 
 
-print("：" == )
 
