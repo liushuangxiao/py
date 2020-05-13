@@ -1,5 +1,7 @@
 import cv2
+import pyautogui
 from matplotlib import pyplot as plt
+from PIL import ImageGrab
 import numpy as np
 from math import cos, sin, atan2, sqrt, pi ,radians, degrees
 
@@ -27,9 +29,15 @@ plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
 img1 = cv2.imread('tu/5.png')
-img2 = cv2.imread('tu/sly.png')
-
 gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+# img2 = cv2.imread('tu/sly.png')
+# gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+# img2 = pyautogui.screenshot(region=[0,0,100,100])
+img2 = ImageGrab.grab(bbox= (196,214, 1206,963))
+img2 = np.asarray(img2)[:,:,::-1].copy()
+cv2.imshow("opencv",img2)
+
 gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
 akaze = cv2.AKAZE_create()
@@ -74,11 +82,6 @@ draw_params = dict(matchColor=(0, 255, 0),
                    matchesMask=matchesMask,
                    flags=0)
 result = cv2.drawMatches(gray1, kp1, gray2, kp2, good, None, **draw_params)
-
-for index in range(len(matchesMask)):
-    if matchesMask[index] == 1:
-        print(kp1[good[index].queryIdx].pt)
-
 
 plt.imshow(result, 'gray')
 plt.show()
