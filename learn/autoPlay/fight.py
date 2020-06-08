@@ -5,6 +5,7 @@ import cv2
 import time
 import numpy as np
 
+
 _interval = pyautogui.PAUSE = 0.05
 tmp = pyautogui.size()
 width = tmp.width
@@ -15,6 +16,10 @@ def load_map_img(pictures):
     _pictureMap = {}
     for key in pictures:
         _pictureMap[key] = cv2.imread(key)
+        # if os.path.exists(key):
+        #     _pictureMap[key] = cv2.imdecode(np.fromfile(key, dtype=np.uint8), -1)
+        # else:
+        #     _pictureMap[key] = None
     return _pictureMap
 
 
@@ -33,7 +38,7 @@ def gauss():
     rtn = 0.0
     while rtn < 2 or rtn > 7:
         rtn = np.random.normal(loc=5, scale=1, size=1)
-    return rtn/10.0
+    return rtn / 10.0
 
 
 def click(location):
@@ -46,7 +51,7 @@ def click(location):
     pyautogui.click()
 
 
-def click_gauss(x,y,width,height,doubleClick=False):
+def click_gauss(x, y, width, height, doubleClick=False):
     """
     0,0 为屏幕左上角 {"x": 586,"y" : 500,"width": 120,"height": 80}
     :param x: x坐标
@@ -161,16 +166,14 @@ def log_warning(s):
     print(*s)
 
 
-def match_img(img_src, obj, confidence=0.5):
+def match_img(img_src, im_obj, confidence=0.5):
     """
 
     :param img_src: 原始图像
-    :param obj: 待查找的图片
+    :param im_obj: 待查找的图片
     :param confidence:
     :return:
     """
-    im_obj = ac.imread(obj)
-
     match_result = ac.find_template(img_src, im_obj, confidence)
     if match_result is not None:
         match_result['shape'] = (img_src.shape[1], img_src.shape[0])  # 0为高，1为宽
@@ -179,9 +182,12 @@ def match_img(img_src, obj, confidence=0.5):
 
 def sly_enter(picture):
     """ 赛利亚 房间的移动 """
-    pyautogui.keyDown("right", interval=1)
+    pyautogui.keyDown("right")
+    time.sleep(1.3)
     pyautogui.keyUp("right")
-    location = match_img(pyautogui.screenshot(), _pictures[picture])
+    sc = pyautogui.screenshot()
+    sc = np.asarray(sc)[:, :, ::-1].copy()
+    location = match_img(sc, _pictures[picture])
     if location:
         click(location["result"])
         return True
@@ -196,35 +202,37 @@ def play_start(play_map):
     :return:
     """
     pm0Str = play_map[0]
-    if sly_enter(pm0Str):
+    map_tmp = _maps[play_map[0]]
+    if sly_enter(map_tmp["picture"]):
         log_warning(["进入[{1}]失败", pm0Str])
         return False
     map_tmp = _maps[pm0Str]
     # 移动到 控制板
     mv(**map_tmp['move'])
     # 点击 控制板
-    click_gauss(*map_tmp['location'],doubleClick=True)
+    # click_gauss(*map_tmp['location'],doubleClick=True)
 
 
 # 范围 boundary True 大, False 小
 # 可柔化技能 follow
 # 打全伤害中断点 breakPoint
 skill = [
-    {'name': "破空拔刀斩", 'key': ['shiftleft'], 'coolingTime': 40, 'duration': 1, 'boundary': True, 'follow': [], 'breakPoint': 0.7, 'last': 0},
-    {'name': "名字", 'key': ['altleft'], 'coolingTime': 40, 'duration': 1, 'boundary': True, 'follow': [], 'breakPoint': 0.7, 'last': 0},
-    {'name': "剑舞", 'key': ['b'], 'coolingTime': 20, 'duration': 2, 'boundary': False, 'follow': [], 'breakPoint': 0.7, 'last': 0}
+    {'name': "破空拔刀斩", 'key': ['shiftleft'], 'coolingTime': 40, 'duration': 1, 'boundary': True, 'follow': [],
+     'breakPoint': 0.7, 'last': 0},
+    {'name': "名字", 'key': ['altleft'], 'coolingTime': 40, 'duration': 1, 'boundary': True, 'follow': [],
+     'breakPoint': 0.7, 'last': 0},
+    {'name': "剑舞", 'key': ['b'], 'coolingTime': 20, 'duration': 2, 'boundary': False, 'follow': [], 'breakPoint': 0.7,
+     'last': 0}
 ]
 
 skill_low = [
-    {'name': "拔刀斩", 'key': ['a'], 'coolingTime': 10, 'duration': 1, 'boundary': False, 'follow': [], 'breakPoint': 0.7, 'last': 0}
+    {'name': "拔刀斩", 'key': ['a'], 'coolingTime': 10, 'duration': 1, 'boundary': False, 'follow': [], 'breakPoint': 0.7,
+     'last': 0}
 ]
 
 play = ["痛", "魂"]
 _maps = load_maps()
 _pictures = load_map_img(_maps['pictures'])
 
-map_tmp = _maps["比拉谢尔"]
-# 点击 控制板
-click_gauss(**map_tmp['location'],doubleClick=True)
-
-print(_pictures)
+time.sleep(2)
+play_start(["比拉谢尔号", "2+2"])

@@ -1,11 +1,13 @@
 import aircv as ac
-
+import pyautogui
 import numpy as np
 
 # https://www.jb51.net/article/165409.htm 找不同
 
 def matchImg(imgsrc,imgobj,confidencevalue=0.5):#imgsrc=原始图像，imgobj=待查找的图片
-    imsrc = ac.imread(imgsrc)
+
+    imsrc = pyautogui.screenshot()
+    imsrc = np.asarray(imsrc)[:, :, ::-1].copy()
     imobj = ac.imread(imgobj)
 
     match_result = ac.find_template(imsrc,imobj,confidencevalue)  # {'confidence': 0.5435812473297119, 'rectangle': ((394, 384), (394, 416), (450, 384), (450, 416)), 'result': (422.0, 400.0)}
@@ -15,7 +17,7 @@ def matchImg(imgsrc,imgobj,confidencevalue=0.5):#imgsrc=原始图像，imgobj=�
     return match_result
 
 
-# c = matchImg("./tu/7.png", "./tu/map2-2.png", 0.5)
+# c = matchImg("./tu/7.png", "tu/sly_blxeh.png", 0.5)
 # print(c)
 #
 #
