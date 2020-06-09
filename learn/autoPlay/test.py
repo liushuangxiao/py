@@ -1,6 +1,7 @@
 import aircv as ac
 import pyautogui
 import numpy as np
+import math
 
 # https://www.jb51.net/article/165409.htm 找不同
 
@@ -17,8 +18,8 @@ def matchImg(imgsrc,imgobj,confidencevalue=0.5):#imgsrc=原始图像，imgobj=�
     return match_result
 
 
-# c = matchImg("./tu/7.png", "tu/sly_blxeh.png", 0.5)
-# print(c)
+c = matchImg("./tu/3.png", "tu/sly_blxeh.png", 0.5)
+print(c)
 #
 #
 # if c == 1:
@@ -26,11 +27,13 @@ def matchImg(imgsrc,imgobj,confidencevalue=0.5):#imgsrc=原始图像，imgobj=�
 # elif 1 == c:
 #     print("ssssssssssss")
 
-ma = 0
-mi = 5
-for i in range(1000000):
-    n = np.random.normal(loc=5, scale=1, size=1)
-    ma = max(n, ma)
-    mi = min(n, mi)
+# ma = 0
+# mi = 5
+# for i in range(1000000):
+#     n = np.random.normal(loc=5, scale=1, size=1)
+#     ma = max(n, ma)
+#     mi = min(n, mi)
+#
+# print(ma, mi)
 
-print(ma, mi)
+print(math.sqrt(17*17 + 10*10))

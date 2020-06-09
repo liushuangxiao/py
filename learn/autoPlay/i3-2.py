@@ -9,36 +9,32 @@ from math import cos, sin, atan2, sqrt, pi ,radians, degrees
 def center_geolocation(geolocations):
     x = 0
     y = 0
-    z = 0
     lenth = len(geolocations)
-    for lon, lat in geolocations:
-        lon = radians(float(lon))
-        lat = radians(float(lat))
-        x += cos(lat) * cos(lon)
-        y += cos(lat) * sin(lon)
-        z += sin(lat)
-
+    for index in geolocations:
+        lon = index[0][0]
+        lat = index[0][1]
+        x += lon
+        y += lat
     x = float(x / lenth)
     y = float(y / lenth)
-    z = float(z / lenth)
-    return (degrees(atan2(y, x)), degrees(atan2(z, sqrt(x * x + y * y))))
+    return x,y
 
 MIN_MATCH_COUNT = 10  # 设置最低特征点匹配数量为10
 
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
-img1 = cv2.imread('tu/map1.png')
+img1 = cv2.imread('tu/4.png')
 gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-img2 = cv2.imread('tu/map1.png')
-gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+# img2 = cv2.imread('tu/5.png')
+# gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-# img2 = pyautogui.screenshot(region=[0,0,100,100])
+img2 = pyautogui.screenshot(region=[0,0,100,100])
 # img2 = ImageGrab.grab(bbox= (196,214, 1206,963))
-# img2 = np.asarray(img2)[:,:,::-1].copy()
+img2 = np.asarray(img2)[:,:,::-1].copy()
 # cv2.imshow("opencv",img2)
 
-# gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
 akaze = cv2.AKAZE_create()
 # akaze = cv2.BRISK_create()
@@ -67,6 +63,7 @@ for ma in matches:
 if len(good) > MIN_MATCH_COUNT:
     # 获取关键点的坐标
     src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+    print(center_geolocation(src_pts))
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
     # 计算变换矩阵和MASK
     M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)

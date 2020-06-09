@@ -10,6 +10,7 @@
   },
   "比拉谢尔号": {
     "location": {
+      "type": "rectangle",
       "x": 586,
       "y" : 500,
       "width": 120,
@@ -22,16 +23,18 @@
     "picture": "tu/sly_blxeh.png",
     "maps": {
       "2+2": {
-        "location": [
-          560,
-          860
-        ],
+        "location": {
+          "type": "circle",
+          "x": 536,
+          "y" : 668,
+          "radius": 19
+        },
         "maps": [
           {
             "name": "痛苦神殿",
             "location": [
-              560,
-              860
+              536,
+              668
             ],
             "difficulty": 2,
             "way": [
