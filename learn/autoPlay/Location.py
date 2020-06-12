@@ -6,7 +6,7 @@ import numpy as np
 class Location:
     img_source = None
     img_target = None
-    coefficient = 0.5
+    coefficient = 0.4
     min_match_count = 10  # 设置最低特征点匹配数量为10
 
     def __init__(self, algorithm='BRISK'):
@@ -17,7 +17,7 @@ class Location:
         else:
             self.alg = cv2.BRISK_create()
 
-    def change_coefficient(self, coefficient=0.5):
+    def change_coefficient(self, coefficient=0.4):
         self.coefficient = coefficient
 
     def change_min_match_count(self, min_match_count=10):
@@ -33,15 +33,21 @@ class Location:
         x = 0
         y = 0
         l = len(x0y)
-        max_x = 0
-        min_x = 5000
-        max_y = 0
-        min_y = 5000
+        max_x = None
+        min_x = None
+        max_y = None
+        min_y = None
         for index in x0y:
             lon = index[0][0]
+            lat = index[0][1]
+            print(lon, lat)
+            if min_x is None:
+                max_x = lon
+                min_x = lon
+                max_y = lat
+                min_y = lat
             max_x = max(max_x, lon)
             min_x = min(min_x, lon)
-            lat = index[0][1]
             max_y = max(max_y, lat)
             min_y = min(min_y, lat)
             x += lon
@@ -50,7 +56,10 @@ class Location:
         y = float(y / l)
         return x, y, max_x - min_x, max_y - min_y
 
-    def locate(self, img_source, img_target):
+    def locate(self, img_source, img_target, cf = None):
+        if cf is None:
+            cf = self.coefficient
+
         min_match_count = self.min_match_count
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
         plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
@@ -78,7 +87,7 @@ class Location:
                 continue
             m = ma[0]
             n = ma[1]
-            if m.distance < 0.5 * n.distance:
+            if m.distance < cf * n.distance:
                 good.append(m)
 
         # 获取关键点的坐标

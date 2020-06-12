@@ -25,45 +25,48 @@ def change_color(x, y):
     pyautogui.moveTo(x, y, duration=0.1)
 
 time.sleep(2)
-pyautogui.moveTo(271, 71, duration=0.1)
-pyautogui.click()
-pyautogui.moveTo(971, 63, duration=0.1)
-pyautogui.click()
+pyautogui.moveTo(579, 695, duration=0.1)
+time.sleep(0.3)
+pyautogui.doubleClick()
 
-x, y = 600,600
-pyautogui.moveTo(x, y, duration=0.1)
+# pyautogui.moveTo(971, 63, duration=0.1)
+# pyautogui.click()
 
-for i in range(20):
-    ex = i * 10 + 10
-    tx = x+ex
-    ty = y+ex
-    pyautogui.moveTo(tx, ty, duration=0.1)
-
-    pyautogui.mouseDown()
-    tx = x+ex
-    ty = y-ex
-    pyautogui.moveTo(tx, ty, duration=0.1)
-    pyautogui.mouseUp()
-    change_color(tx,ty)
-    pyautogui.mouseDown()
-
-    tx = x-ex
-    ty = y-ex
-    pyautogui.moveTo(tx, ty, duration=0.1)
-    pyautogui.mouseUp()
-    change_color(tx,ty)
-    pyautogui.mouseDown()
-
-    tx = x-ex
-    ty = y+ex
-    pyautogui.moveTo(tx, ty, duration=0.1)
-    pyautogui.mouseUp()
-    change_color(tx,ty)
-    pyautogui.mouseDown()
-
-    tx = x+ex
-    ty = y+ex
-    pyautogui.moveTo(tx, ty, duration=0.1)
-    pyautogui.mouseUp()
-    change_color(tx,ty)
+#
+# x, y = 600,600
+# pyautogui.moveTo(x, y, duration=0.1)
+#
+# for i in range(20):
+#     ex = i * 10 + 10
+#     tx = x+ex
+#     ty = y+ex
+#     pyautogui.moveTo(tx, ty, duration=0.1)
+#
+#     pyautogui.mouseDown()
+#     tx = x+ex
+#     ty = y-ex
+#     pyautogui.moveTo(tx, ty, duration=0.1)
+#     pyautogui.mouseUp()
+#     change_color(tx,ty)
+#     pyautogui.mouseDown()
+#
+#     tx = x-ex
+#     ty = y-ex
+#     pyautogui.moveTo(tx, ty, duration=0.1)
+#     pyautogui.mouseUp()
+#     change_color(tx,ty)
+#     pyautogui.mouseDown()
+#
+#     tx = x-ex
+#     ty = y+ex
+#     pyautogui.moveTo(tx, ty, duration=0.1)
+#     pyautogui.mouseUp()
+#     change_color(tx,ty)
+#     pyautogui.mouseDown()
+#
+#     tx = x+ex
+#     ty = y+ex
+#     pyautogui.moveTo(tx, ty, duration=0.1)
+#     pyautogui.mouseUp()
+#     change_color(tx,ty)
 

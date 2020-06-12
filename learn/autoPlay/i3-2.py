@@ -24,20 +24,21 @@ MIN_MATCH_COUNT = 10  # 设置最低特征点匹配数量为10
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
-img1 = cv2.imread('tu/4.png')
+img2 = cv2.imread('tu/sly_blxeh.png')
+
+# img1 = pyautogui.screenshot()
+img1 = ImageGrab.grab(bbox= (196,214, 1206,963))
+img1 = np.asarray(img1)[:,:,::-1].copy()
+# cv2.imshow("opencv",img2)
+
+
 gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 # img2 = cv2.imread('tu/5.png')
 # gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-
-img2 = pyautogui.screenshot(region=[0,0,100,100])
-# img2 = ImageGrab.grab(bbox= (196,214, 1206,963))
-img2 = np.asarray(img2)[:,:,::-1].copy()
-# cv2.imshow("opencv",img2)
-
 gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-akaze = cv2.AKAZE_create()
-# akaze = cv2.BRISK_create()
+# akaze = cv2.AKAZE_create()
+akaze = cv2.BRISK_create()
 # akaze = cv2.ORB_create()
 
 
@@ -57,7 +58,7 @@ for ma in matches:
         continue
     m = ma[0]
     n = ma[1]
-    if m.distance < 0.5 * n.distance:
+    if m.distance < 0.4 * n.distance:
         good.append(m)
 
 if len(good) > MIN_MATCH_COUNT:

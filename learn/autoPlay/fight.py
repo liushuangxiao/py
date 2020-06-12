@@ -107,12 +107,15 @@ def click_gauss(x, y, width, height, doubleClick=False):
     :return:
     """
     # 高斯分布
+    # print(x, y, width, height)
     clickX = gauss() * width + x
     clickY = gauss() * height + y
     pyautogui.moveTo(clickX, clickY, duration=0.1)
-    pyautogui.click()
+    press_key("leftmouse")
+    time.sleep(0.1)
+    release_key("leftmouse")
     if doubleClick:
-        pyautogui.click()
+        pyautogui.leftClick()
 
 
 def click_circle_gauss(x, y, radius, doubleClick=False):
@@ -134,29 +137,36 @@ def click_circle_gauss(x, y, radius, doubleClick=False):
 
 def mv(xt=0.0, yt=0.0):
     interval = _interval
-    x_time = math.ceil(abs(xt) / interval)
-    y_time = math.ceil(abs(yt) / interval)
+    x_time = abs(xt)
+    y_time = abs(yt)
     x_key = "right" if xt > 0 else "left"
     y_key = "up" if yt > 0 else "down"
-
-    type_key(x_key,interval)
-    press_key(x_key)
-    time.sleep(interval)
-    press_key(y_key)
-    time.sleep(interval)
-
-    if x_time < y_time:
-        time.sleep(x_time - 4 * _interval)
+    if yt == 0:
+        press_key(x_key)
+        time.sleep(x_time)
         release_key(x_key)
-        time.sleep(y_time - x_time)
+        return
+    if xt == 0:
+        press_key(y_key)
+        time.sleep(y_time)
         release_key(y_key)
-    else:
-        time.sleep(y_time - 4 * _interval)
+        return
+    if x_time > y_time:
+        press_key(x_key)
+        time.sleep(interval)
+        press_key(y_key)
+        time.sleep(y_time - interval)
         release_key(y_key)
         time.sleep(x_time - y_time)
         release_key(x_key)
-
-
+    else:
+        press_key(x_key)
+        time.sleep(interval)
+        press_key(y_key)
+        time.sleep(x_time - interval)
+        release_key(x_key)
+        time.sleep(y_time - x_time)
+        release_key(y_key)
 
 
 
@@ -189,10 +199,12 @@ def location(img):
 
 def sly_enter(picture):
     """ 赛利亚 房间的移动 """
-    mv(1.3, 0)
+    mv(1.7,-0.25)
+    print(picture)
     x0y = location(_pictures[picture])
+    print(x0y)
     if location:
-        click(*x0y)
+        click_gauss(*x0y)
         return True
     else:
         return False
@@ -209,15 +221,15 @@ def play_blxeh(play_map):
     if not sly_enter(map0_tmp["picture"]):
         log_warning(["进入[{1}]失败", pm0Str])
         return False
-    map0_tmp = _maps[pm0Str]
-    # 移动到 控制板
-    mv(**map0_tmp['move'])
-    # 点击 控制板
-    click_gauss(*map0_tmp['location'], doubleClick=True)
-    # 选着地图
-    pm1Str = play_map[1]
-    map1_tmp = map0_tmp["maps"][pm1Str]
-    click_circle_gauss(**map1_tmp['location'], doubleClick=True)
+    # map0_tmp = _maps[pm0Str]
+    # # 移动到 控制板
+    # mv(**map0_tmp['move'])
+    # # 点击 控制板
+    # click_gauss(*map0_tmp['location'], doubleClick=True)
+    # # 选着地图
+    # pm1Str = play_map[1]
+    # map1_tmp = map0_tmp["maps"][pm1Str]
+    # click_circle_gauss(**map1_tmp['location'], doubleClick=True)
 
 
 # 范围 boundary True 大, False 小
@@ -241,5 +253,7 @@ play = ["痛", "魂"]
 _maps = load_maps()
 _pictures = load_map_img(_maps['pictures'])
 
-time.sleep(2)
+for i in range(3,-1,-1):
+    time.sleep(1)
+    print(i)
 play_blxeh(["比拉谢尔号", "2+2"])
