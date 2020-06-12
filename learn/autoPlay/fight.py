@@ -10,9 +10,10 @@ import sys
 
 sys.path.append("./")
 
-import Location
+from message_sender import press_key, release_key, type_key
+from Location import Location
 
-_interval = pyautogui.PAUSE = 0.05
+_interval = 0.05
 _pi = 3.1415926
 tmp = pyautogui.size()
 _width = tmp.width
@@ -49,15 +50,7 @@ def load_maps():
 
 def press_skill(key_array):
     for _key in key_array:
-        pyautogui.press(_key, interval=0.03)
-
-
-def key_down(key, tm):
-    pyautogui.keyDown(key)
-    for i in range(math.ceil(tm / _interval)):
-        print(i)
-        pyautogui.press(key)
-    pyautogui.keyUp(key)
+        type_key(_key, interval=0.03)
 
 
 def gauss():
@@ -140,22 +133,31 @@ def click_circle_gauss(x, y, radius, doubleClick=False):
 
 
 def mv(xt=0.0, yt=0.0):
-    x_time = math.ceil(abs(xt) / _interval)
-    y_time = math.ceil(abs(yt) / _interval)
+    interval = _interval
+    x_time = math.ceil(abs(xt) / interval)
+    y_time = math.ceil(abs(yt) / interval)
     x_key = "right" if xt > 0 else "left"
     y_key = "up" if yt > 0 else "down"
 
-    pyautogui.keyDown(x_key)
-    pyautogui.keyDown(y_key)
-    for count in range(max(x_time, y_time) + 1):
-        if count < x_time:
-            pyautogui.press(x_key, interval=0.03)
-        else:
-            pyautogui.keyUp(x_key)
-        if count < y_time:
-            pyautogui.press(y_key, interval=0.03)
-        else:
-            pyautogui.keyUp(y_key)
+    type_key(x_key,interval)
+    press_key(x_key)
+    time.sleep(interval)
+    press_key(y_key)
+    time.sleep(interval)
+
+    if x_time < y_time:
+        time.sleep(x_time - 4 * _interval)
+        release_key(x_key)
+        time.sleep(y_time - x_time)
+        release_key(y_key)
+    else:
+        time.sleep(y_time - 4 * _interval)
+        release_key(y_key)
+        time.sleep(x_time - y_time)
+        release_key(x_key)
+
+
+
 
 
 def log_info(s):
@@ -187,7 +189,7 @@ def location(img):
 
 def sly_enter(picture):
     """ 赛利亚 房间的移动 """
-    key_down("right", 1.3)
+    mv(1.3, 0)
     x0y = location(_pictures[picture])
     if location:
         click(*x0y)

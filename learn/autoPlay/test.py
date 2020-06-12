@@ -36,4 +36,4 @@ print(c)
 #
 # print(ma, mi)
 
-print(math.sqrt(17*17 + 10*10))
+print(0xCB + 1024)
