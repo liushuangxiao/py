@@ -88,6 +88,30 @@ def type_key(key, interval=0.05):
     time.sleep(interval)
 
 
+def set_pos(x, y):
+    x = 1 + int(x * 65536./1920.)
+    y = 1 + int(y * 65536./1080.)
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    ii_.mi = MouseInput(x, y, 0, (0x0001 | 0x8000), 0, ctypes.pointer(extra))
+    command = Input(ctypes.c_ulong(0), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(command), ctypes.sizeof(command))
+
+
+def left_click():
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    ii_.mi = MouseInput(0, 0, 0, 0x0002, 0, ctypes.pointer(extra))
+    x = Input(ctypes.c_ulong(0), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    ii_.mi = MouseInput(0, 0, 0, 0x0004, 0, ctypes.pointer(extra))
+    x = Input(ctypes.c_ulong(0), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+
 # Character map https://gist.github.com/tracend/912308
 char_map = {
     'q': 0x10, 'w': 0x11, 'e': 0x12, 'r': 0x13, 't': 0x14, 'y': 0x15, 'u': 0x16, 'i': 0x17, 'o': 0x18, 'p': 0x19,
@@ -110,9 +134,9 @@ char_map = {
 # press_key(char_map['o']);
 # release_key(char_map['o']);  # o
 
-# for i in range(3,-1,-1):
-#     time.sleep(1)
-#     print(i)
+for i in range(3,-1,-1):
+    time.sleep(1)
+    print(i)
 
 # numlock 为 + 1024
 # code = 0x3a
@@ -138,3 +162,9 @@ char_map = {
 
 # press_key(0x1C);
 # release_key(0x1C);  # Submit it (0x1C is ENTER key -> possible char_map extension? ;))
+
+set_pos(200, 70)
+time.sleep(0.05)
+left_click()
+time.sleep(0.05)
+left_click()

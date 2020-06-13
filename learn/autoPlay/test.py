@@ -36,4 +36,4 @@ print(c)
 #
 # print(ma, mi)
 
-print(0xCB + 1024)
+print(math.sin(-0))
