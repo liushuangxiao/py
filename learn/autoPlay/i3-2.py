@@ -24,16 +24,17 @@ MIN_MATCH_COUNT = 10  # 设置最低特征点匹配数量为10
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
-img2 = cv2.imread('tu/sly_blxeh.png')
+# img2 = cv2.imread('tu/sly_blxeh.png')
+img2 = cv2.imread('tu/tkdxs.png')
 
 # img1 = pyautogui.screenshot()
-img1 = ImageGrab.grab(bbox= (196,214, 1206,963))
+img1 = ImageGrab.grab()
 img1 = np.asarray(img1)[:,:,::-1].copy()
 # cv2.imshow("opencv",img2)
 
 
 gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-# img2 = cv2.imread('tu/5.png')
+# img2 = cv2.imread('tu/blxeh_board.png')
 # gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 

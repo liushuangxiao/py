@@ -1,6 +1,7 @@
 from random import randint
 from math import ceil, sin, pi
 
+JIAN_HUN=0x01
 
 class move:
     # 曲线参数 y = ax + b
@@ -14,6 +15,8 @@ class move:
 
     __curve_coe = None
     __curve_confuse_coe = None
+
+
 
     def __init__(self, x_start, y_start, x_target, y_target, space=None):
         a = (y_target - y_start) / (x_target - x_start)
@@ -40,3 +43,18 @@ class move:
         xi = x_start + si
         yi = xi * self.__a + self.__b, + sin(si / self.__difference * self.__curve_coe * pi) * 20 + sin(si / self.__difference * self.__curve_confuse_coe * pi) * 4
         return xi, yi
+
+
+def speed_x(type, speed_plus):
+    if type == JIAN_HUN:
+        return speed_plus * 8.7 + 869.5
+
+
+def speed_yt(speed_plus):
+    return speed_plus * 3.028571 + 316.0
+
+
+def speed_xt(speed_plus):
+    return speed_plus * 2.5166666 + 261.6666666
+
+

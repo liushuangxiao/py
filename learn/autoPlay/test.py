@@ -36,4 +36,12 @@ print(c)
 #
 # print(ma, mi)
 
-print(math.sin(-0))
+for i in range(1,2):
+    print(i)
+
+# rtn = 1
+# while rtn > 0.5 or rtn < -0.5:
+#     rtn = np.random.normal(loc=0, scale=1, size=1)
+#     print(rtn)
+#
+# print(rtn)

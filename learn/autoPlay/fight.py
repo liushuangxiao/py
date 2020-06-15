@@ -5,12 +5,13 @@ import cv2
 import time
 import numpy as np
 import math
+import move
 
 import sys
 
 sys.path.append("./")
 
-from message_sender import press_key, release_key, type_key
+from message_sender import press_key, release_key, type_key, left_click
 from Location import Location
 
 _interval = 0.05
@@ -80,10 +81,10 @@ def gauss0to1():
     高斯分布 期望 0.5
     :return: 0 < return < 1
     """
-    rtn = 0.0
-    while rtn < 0.5 or rtn > -0.5:
+    rtn = 1
+    while rtn > 0.5 or rtn < -0.5:
         rtn = np.random.normal(loc=0, scale=1, size=1)
-    return rtn + 0.5
+    return rtn[0] + 0.5
 
 
 def click(x, y):
@@ -97,7 +98,7 @@ def click(x, y):
     pyautogui.click()
 
 
-def click_gauss(x, y, width, height, doubleClick=False):
+def click_gauss(x, y, width, height, doubleClick=False, gap=0.05, type=None):
     """
     0,0 为屏幕左上角 {"x": 586,"y" : 500,"width": 120,"height": 80}
     :param x: x坐标
@@ -108,17 +109,17 @@ def click_gauss(x, y, width, height, doubleClick=False):
     """
     # 高斯分布
     # print(x, y, width, height)
-    clickX = gauss() * width + x
-    clickY = gauss() * height + y
+    clickX = gauss0to1() * width + x
+    clickY = gauss0to1() * height + y
     pyautogui.moveTo(clickX, clickY, duration=0.1)
-    press_key("leftmouse")
-    time.sleep(0.1)
-    release_key("leftmouse")
+    time.sleep(gap)
+    left_click()
+    time.sleep(0.05)
     if doubleClick:
-        pyautogui.leftClick()
+        left_click()
 
 
-def click_circle_gauss(x, y, radius, doubleClick=False):
+def click_circle_gauss(x, y, radius, doubleClick=False, gap=0, type=None):
     """
     高斯分布 期望值为圆心
     :param x: 圆心
@@ -130,9 +131,10 @@ def click_circle_gauss(x, y, radius, doubleClick=False):
     clickX = x + radius * math.sin(angle * _pi / 180)
     clickY = y + radius * math.cos(angle * _pi / 180)
     pyautogui.moveTo(clickX, clickY, duration=0.1)
-    pyautogui.click()
+    time.sleep(gap)
+    left_click()
     if doubleClick:
-        pyautogui.click()
+        left_click()
 
 
 def mv(xt=0.0, yt=0.0):
@@ -169,7 +171,6 @@ def mv(xt=0.0, yt=0.0):
         release_key(y_key)
 
 
-
 def log_info(s):
     print(s)
 
@@ -192,44 +193,70 @@ def match_img(img_src, im_obj, confidence=0.5):
     return match_result
 
 
-def location(img):
-    sc = print_screen()
-    return _locator.locate(sc, img)
-
-
-def sly_enter(picture):
-    """ 赛利亚 房间的移动 """
-    mv(1.7,-0.25)
-    print(picture)
-    x0y = location(_pictures[picture])
+def click_pictures(img_str):
+    img = _pictures[img_str]
+    x0y = location_pictures(img)
     print(x0y)
-    if location:
+    if x0y[0] != 0:
         click_gauss(*x0y)
         return True
     else:
         return False
 
 
-def play_blxeh(play_map):
+def location_pictures(img):
+    sc = print_screen()
+    return _locator.locate(sc, img)
+
+
+def exist_pictures(img):
+    sc = print_screen()
+    return _locator.exist(sc, img, mmc=7)
+
+
+def sly_enter(picture, character):
+    """ 赛利亚 房间的移动 """
+    mv(500 / character["townSpeedX"], -100 / character["townSpeedY"])
+    return click_pictures(picture)
+
+
+def choose_difficulty(diff):
+    for i in range(1,diff):
+        type_key("right", 0.1)
+
+
+def play_map(map):
+    location = map["location"]
+    t = location["type"]
+    if t == "rectangle":
+        click_gauss(**location)
+        choose_difficulty(map["difficulty"])
+        type_key("space", 0.05)
+
+
+def play_blxeh(play_map, character):
     """
     该方法只支持比拉谢尔号地图
     :param play_map: 刷图 例如: [比拉谢尔, 2+2]
     :return:
     """
     pm0Str = play_map[0]
-    map0_tmp = _maps[play_map[0]]
-    if not sly_enter(map0_tmp["picture"]):
+    map0_tmp = _maps[pm0Str]
+    if not sly_enter(map0_tmp["picture"], character):
         log_warning(["进入[{1}]失败", pm0Str])
         return False
-    # map0_tmp = _maps[pm0Str]
-    # # 移动到 控制板
-    # mv(**map0_tmp['move'])
-    # # 点击 控制板
-    # click_gauss(*map0_tmp['location'], doubleClick=True)
-    # # 选着地图
-    # pm1Str = play_map[1]
-    # map1_tmp = map0_tmp["maps"][pm1Str]
-    # click_circle_gauss(**map1_tmp['location'], doubleClick=True)
+    dis = map0_tmp['board']["dis"]
+    xtown = character["townSpeedX"]
+    ytown = character["townSpeedY"]
+    # 移动到 控制板
+    mv(dis / xtown, 0)
+    # 打开 面板
+    click_pictures(map0_tmp['board']["picture"])
+    # 选着地图
+    pm1Str = play_map[1]
+    map1_tmp = map0_tmp["maps"][pm1Str]
+    local = map1_tmp['location']
+    click_circle_gauss(**local)
 
 
 # 范围 boundary True 大, False 小
@@ -252,8 +279,21 @@ skill_low = [
 play = ["痛", "魂"]
 _maps = load_maps()
 _pictures = load_map_img(_maps['pictures'])
+character = {'moveSpeed': 1336, "townSpeedY": move.speed_yt(140), "townSpeedX": move.speed_xt(140)}
 
-for i in range(3,-1,-1):
-    time.sleep(1)
-    print(i)
-play_blxeh(["比拉谢尔号", "2+2"])
+# for i in range(3, -1, -1):
+#     time.sleep(1)
+#     print(i)
+pms = ["比拉谢尔号", "2+2"]
+# play_blxeh(["比拉谢尔号", "2+2"],character)
+
+pm0Str = pms[0]
+map0_tmp = _maps[pm0Str]
+pm1Str = pms[1]
+map1_tmp = map0_tmp["maps"][pm1Str]
+ssm = map1_tmp["maps"][0]
+# play_map(ssm)
+enter_img = ssm["enter_img"]
+print(enter_img)
+ex = exist_pictures(_pictures[enter_img])
+print(ex)
